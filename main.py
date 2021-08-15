@@ -7,18 +7,9 @@ import signal_modes.soundparse
 import signal_modes.stub
 
 
-SCALE = 5
-NORMALIZE = False
-
-
 display = Display()
 
-signal0 = np.zeros((SIZE[1],))
-ALPHA = 0.5
-
 def signal_callback(signal, main_freq):
-    signal = signal * SCALE
-    signal = signal * ALPHA + signal0 * (1 - ALPHA)
     image = gen_image(signal, main_freq)
     display.draw_image(image)
 

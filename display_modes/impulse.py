@@ -11,7 +11,6 @@ def gen_colors(main_freq):
     min_color_hsv = np.float32(colorsys.rgb_to_hsv(MIN_COLOR[0], MIN_COLOR[1], MIN_COLOR[2]))
     max_color_hsv = np.float32(colorsys.rgb_to_hsv(MAX_COLOR[0], MAX_COLOR[1], MAX_COLOR[2]))
 
-    print(main_freq)
     t = main_freq / MAX_FREQ
 
     if t > 2 * MAX_FREQ:

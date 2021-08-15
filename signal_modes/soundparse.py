@@ -11,6 +11,7 @@ TIME = 0.03
 CHUNK = int(RATE * TIME)
 DEVICE = 0
 SIGNAL_LEN = SIZE[1]
+SCALE = 5
 
 print(sd.query_devices())
 
@@ -24,16 +25,25 @@ def global_callback(indata, frames, tim, status):
     spectrum[0] = 0
     spectrum[-1] = 0
     main_freq = np.argmax(np.abs(spectrum[:len(spectrum)//SIGNAL_LEN]))
-    spectrum = spectrum[:main_freq * SIGNAL_LEN:main_freq]
+    # spectrum = spectrum[:main_freq * SIGNAL_LEN:main_freq]
+    spectrum = spectrum[:int(np.ceil(main_freq/2)) * SIGNAL_LEN:int(np.ceil(main_freq/2))]
+    spectrum[0] = 0
+    spectrum[1] = 0
+    spectrum[-1] = 0
+    spectrum[-2] = 0
 
     norm = np.linalg.norm(spectrum)
 
-    # rot = spectrum[1] / np.abs(spectrum[1]) * np.exp(0.5j * np.pi)
-    rot = spectrum[1] * np.exp(0.5j * np.pi) / np.abs(spectrum[1])
-    spectrum /= np.power(rot, np.arange(len(spectrum)))
+    rot = spectrum[2] * np.exp(0.5j * np.pi) / np.abs(spectrum[2])
+    spectrum /= np.power(rot, np.arange(len(spectrum)) / 2)
     spectrum /= norm
 
     signal = np.real(np.fft.ifft(spectrum))
+
+    window = np.linspace(0, np.pi, len(signal))
+    window = np.sin(window)
+    signal = signal * window
+    signal = signal * SCALE
 
     signal_callback(signal, main_freq * 1 / TIME)
 
