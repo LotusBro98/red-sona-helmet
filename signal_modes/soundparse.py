@@ -1,6 +1,5 @@
 import sounddevice as sd
 import numpy as np
-import time
 
 from display import SIZE
 
@@ -12,6 +11,7 @@ CHUNK = int(RATE * TIME)
 DEVICE = 0
 SIGNAL_LEN = SIZE[1]
 SCALE = 5
+LOW_LEVEL_BOUND = 0.14
 
 print(sd.query_devices())
 
@@ -33,6 +33,8 @@ def global_callback(indata, frames, tim, status):
     spectrum[-2] = 0
 
     norm = np.linalg.norm(spectrum)
+    if norm < LOW_LEVEL_BOUND:
+        norm = LOW_LEVEL_BOUND
 
     rot = spectrum[2] * np.exp(0.5j * np.pi) / np.abs(spectrum[2])
     spectrum /= np.power(rot, np.arange(len(spectrum)) / 2)
